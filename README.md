@@ -1,2 +1,0 @@
-# paictm
-vue
