@@ -2,7 +2,7 @@
   <div class="box">
     <h3 style="text-align:center;margin-bottom:10px;">运行配置</h3>
     <template>
-      <el-table :data="tableData" style="width: 100%" size="mini" :cell-style="isCenter" stripe :header-cell-style="isThead" :empty-text="emptydevice">
+      <el-table :data="tableData" size="mini" :cell-style="isCenter" stripe :header-cell-style="isThead" :empty-text="emptydevice">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
@@ -306,6 +306,7 @@ import {mapState} from 'vuex'
 <style scoped>
   .box{
     width: 70%;
+    max-height: 80%;
     background-color: #fff;
     margin:  0 auto;
     margin-top: 3%;
@@ -313,6 +314,7 @@ import {mapState} from 'vuex'
     padding: 2em;
     border-radius: 10px;
     position: relative;
+    overflow-y:auto;
   }
   .footer{
     padding: 1em;

@@ -63,7 +63,6 @@ export default {
       tempList:[],
       pagesize:10,
       currentPage:1,
-      test:'123123123',
     }
   },
   props: ['projectid','caseid'],

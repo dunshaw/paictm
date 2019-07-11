@@ -75,7 +75,7 @@
           </div>
 
           <div class="frombg animated" v-if="BeforeRunFlag">
-            <Runsetup :projectid="projectid" :runid="caseid" :codeLang="codeLang" :runtype="runtypes"></Runsetup> <!-- 运行准备 -->
+            <Runsetup :projectid="projectid" :runid="caseid" :codeLang="codeLang" :runtype="runtypes" :tool="tasktool"></Runsetup> <!-- 运行准备 -->
           </div>
       </transition>
       

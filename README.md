@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # pacitmvue
 
 > A Vue.js project
@@ -28,3 +29,7 @@ npm test
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+=======
+# paictm
+vue
+>>>>>>> e7e8123567c9076042461e0023b9ccac23ab7e50
