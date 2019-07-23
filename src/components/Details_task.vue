@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="success" icon="el-icon-caret-right" circle @click="transfer" class="detailsbtn" size="mini"></el-button>
+    <el-button icon="el-icon-d-arrow-right" circle @click="transfer" class="detailsbtn" size="mini"></el-button>
     <el-tag><h3 style="text-align:center;margin-bottom:10px;">{{showtaskname}}{{showtaskid}}</h3></el-tag>
 
     <el-collapse v-model="activeName" accordion>

@@ -46,10 +46,11 @@
       <el-main>
         <el-row :gutter="5" style='padding:2px;outline: 1px solid #eee;'>
           <el-col :span="12"><div class="box" style="box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1)">
-            <Tasklist :projectid="projectid" :caseid="caseid" @transferData='AddData'></Tasklist>
+            <Tasklist :projectid="projectid" :caseid="caseid"></Tasklist>
           </div></el-col>
           <el-col :span="12"><div class="box" style="box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1)">
             <!-- 实现代码 -->
+            <i class="el-icon-mobile mobilechose" @click='devicebox' v-show="mobileFlag"></i>                  
             <el-table :data="showcode" size="small">
               <el-table-column label="!执行代码">
                 <template slot-scope="scope">
@@ -75,7 +76,24 @@
           </div>
 
           <div class="frombg animated" v-if="BeforeRunFlag">
-            <Runsetup :projectid="projectid" :runid="caseid" :codeLang="codeLang" :runtype="runtypes" :tool="tasktool"></Runsetup> <!-- 运行准备 -->
+            <Runsetup :projectid="projectid" :runid="caseid" :codeLang="codeLang" :runtype="runtypes"></Runsetup> <!-- 运行准备 -->
+          </div>
+          <div class="frombg animated" v-if="isdeviceBox">
+            <div class="devicesbox">
+              <h3 style="text-align:center;margin-bottom:10px;">选择设备</h3>
+              <el-tabs tab-position="left" border>
+                  <el-tab-pane v-for="log in mobiles" :label="log.brand" :key="log.id" >
+                      <el-radio-group v-model="checkradio" size="mini">
+                          <el-radio-button v-for="item in log.device" :label="item.id" :key="item.id" :disabled="item.state">{{item.name}}</el-radio-button>
+                      </el-radio-group>
+                  </el-tab-pane>
+              </el-tabs>
+              <div class="devicefooter">
+                  <el-button size="small" type="warning" @click="changePhoneCode(true)">通用</el-button>
+                  <el-button type="primary" size="small" @click="changePhoneCode(false)">确定</el-button>
+                  <el-button size="small" @click="isdeviceBox=false">取消</el-button>
+              </div>
+            </div>
           </div>
       </transition>
       
@@ -107,7 +125,10 @@ export default {
           projectid:'',
           projectname:'',
           showcode:[],
-          tasktool:'',
+          mobileFlag:false,
+          isdeviceBox:false,
+          checkradio:-1,
+          mobiles:[],
         }
       },
       computed:{
@@ -137,6 +158,49 @@ export default {
         Runsetup:runsetup
       },
       methods: {
+        // 获取全部手机
+        devicebox(){
+          let _this=this;
+          _this.$axios({
+            method:'post',
+            url:'/api/devices/select',
+            data:_this.$qs.stringify({'project_id':_this.projectid}),
+          }).then(res=>{
+            console.log(res);
+            if(res.data.status==200){
+              _this.mobiles=res.data.data
+              _this.isdeviceBox = true;
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
+        },
+        // 改变手机获取code
+        changePhoneCode(data){
+          let commandid = this.showcode[0].command_id;
+          this.isdeviceBox = false;
+          let stepid = this.$store.state.isStepCodeid;
+          if(data){
+            this.checkradio = -1
+          }
+          console.log(this.checkradio)
+          let _this=this;
+          _this.$axios({
+            method:'post',
+            url:'/api/command/get_code_by_device_id',
+            data:_this.$qs.stringify({'test_step_id':stepid,'code':_this.codeLang,'device_id':_this.checkradio,'command_id':commandid}),
+          }).then(res=>{
+            console.log(res);
+            if(res.data.status==200){
+              _this.showcode = res.data.code
+              return _this.$message.success(res.data.msg)
+            }else{
+              return _this.$message.error(res.data.msg)
+            }
+          }).catch(error=>{
+            console.log(error)
+          })
+        },
         //接收route参数
         getRouterData(){
           this.caseid = this.$route.query.caseid
@@ -179,7 +243,6 @@ export default {
           this.codeLang=command;
           this.$store.commit('isCodeLang',this.codeLang)
         },
-
         //获取步骤实现代码
         getstepcode(stepid){
           if(stepid==0){
@@ -195,6 +258,7 @@ export default {
             console.log(res);
             if(res.data.status==200){
               _this.showcode = res.data.code
+              _this.mobileFlag = true
               return _this.$message.success(res.data.msg)
             }else{
               return _this.$message.error(res.data.msg)
@@ -203,7 +267,9 @@ export default {
             console.log(error)
           })
         },
+        // 更新 保存
         savestepcode(){
+          this.showcode[0]['divice_id']=this.checkradio;
           console.log(this.showcode)
           let _this=this;
           _this.$axios({
@@ -221,14 +287,20 @@ export default {
             console.log(error)
           })
         },
-        AddData(tool){
-          this.tasktool = tool;
-        },
       },
 
     };
 </script>
 <style scoped>
+.devicesbox{
+  width: 40%;
+  background-color: #fff;
+  margin:  0 auto;
+  margin-top: 3%;
+  margin-bottom: 5%;
+  padding: 2em;
+  border-radius: 10px;
+}
 .box{
   padding: 10px;
 }
@@ -272,6 +344,23 @@ export default {
     color: #409EFF;
 }
 .el-icon-arrow-down {
-  font-size: 12px;
+  font-size: 1rem;
 }
+.mobilechose{
+  position: absolute;
+  right: 1%;
+  z-index: 99;
+  color: #999;
+  cursor: pointer;
+}
+.mobilechose:hover{
+  color: #409EFF;
+}
+.devicefooter{
+    padding: 0;
+    margin-left: 0;
+    height: 30px;
+    text-align: right;
+    padding-right: 5%;
+  }
 </style>

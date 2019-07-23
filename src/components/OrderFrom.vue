@@ -152,7 +152,8 @@ export default {
 <style scoped lang="scss">
 .box{
     width: 40%;
-    max-height: 90%;
+    max-height: 85%;
+    overflow-y: auto;
     background-color: #fff;
     margin:  0 auto;
     margin-top: 3%;

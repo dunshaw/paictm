@@ -2,7 +2,7 @@
   <div class="box">
     <h3 style="text-align:center;margin-bottom:10px;">运行配置</h3>
     <template>
-      <el-table :data="tableData" size="mini" :cell-style="isCenter" stripe :header-cell-style="isThead" :empty-text="emptydevice">
+      <el-table :data="tableData" class="phonebox" size="mini" :cell-style="isCenter" stripe :header-cell-style="isThead" :empty-text="emptydevice">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
@@ -55,7 +55,7 @@
           </template>
         </el-table-column>
         <el-table-column label="设备名称" prop="name"></el-table-column>
-        <el-table-column label="设备Appium配置" >
+        <el-table-column label="设备Appium配置" v-if="tool=='cucumber'">
           <template slot-scope="scope" >
             <el-select v-model="scope.row.value" placeholder="请选择" size="mini">
               <el-option v-for="item in deploy_infos" :key="item.id" :label="item.name" :value="item.id">
@@ -111,6 +111,7 @@ import {mapState} from 'vuex'
         reports:false, 
         performance:false,
         centerDialogVisible:false,
+        tool:'',
         // options:['cucumber','behave'],
         // task_tool:'cucumber',
       }
@@ -158,6 +159,7 @@ import {mapState} from 'vuex'
         }).then(function (res){
             console.log(res);
             if(res.data.status==200){
+              _this.tool = res.data.task_tool
               _this.deploy_infos=res.data.deploy_infos
               _this.tableData=res.data.device_infos
             }
@@ -184,12 +186,18 @@ import {mapState} from 'vuex'
         // console.log(this.runid,this.runtype)
         // this.centerDialogVisible=false;
         let DevicesData=[]
+        
         for (let i of this.tableData) {
-          if(!i['value']){
-            return this.$message.error('请先选择Appium配置！')
+          if(this.tool=='cucumber'){
+            if(!i['value']){
+              return this.$message.error('请先选择Appium配置！')
+            }else{
+              DevicesData.push({'device_id':i.id,'deploy_id':i.value})
+            }
           }else{
-            DevicesData.push({'device_id':i.id,'deploy_id':i.value})
+            DevicesData.push({'device_id':i.id,'deploy_id':-1})
           }
+          
         }
 
         let data={
@@ -315,6 +323,9 @@ import {mapState} from 'vuex'
     border-radius: 10px;
     position: relative;
     overflow-y:auto;
+  }
+  .phonebox{
+    width: 100%;
   }
   .footer{
     padding: 1em;

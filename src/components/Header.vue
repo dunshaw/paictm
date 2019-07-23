@@ -38,7 +38,7 @@
         <!-- 任务进度 -->
         <div class="taskList animated" v-if='taskflag'>
           <el-main>
-            <el-button type="danger" icon="el-icon-caret-bottom" circle @click="taskflag=false" class="taskbtn" size="mini"></el-button>
+            <el-button icon="el-icon-caret-bottom" circle @click="taskflag=false" class="taskbtn" size="mini"></el-button>
             <el-tag><h3 style="text-align:center;margin-bottom:10px;">任务进度</h3></el-tag>
             <el-table :data="tables" style="width: 100%;" :cell-style="isCenter" stripe :header-cell-style="isThead" border>
               <el-table-column type="index" width="50"></el-table-column>
@@ -137,7 +137,7 @@ import mydetails from './Details_task'
           return this.$store.getters.getRunTasks
         },
         tables() {
-          return this.tableData.concat(this.isFinishData)   // 显示数据的处理
+          return this.tableData =[...this.tableData,...this.$store.getters.getFinishfive]  // 显示数据的处理
         },
     }),
     watch:{
@@ -146,6 +146,7 @@ import mydetails from './Details_task'
         let _this =this;
         if(newstep==0){
           this.tasks=''
+          this.tableData = []
           console.log('overtask')
           clearInterval(this.timer)
         }else{
@@ -389,6 +390,8 @@ import mydetails from './Details_task'
     }
     .el-main{
       width:80%;
+      max-height:95%;
+      overflow-y:auto;
       /*border:1px solid red;*/
       margin:0 auto;
       margin-top: 2%;
@@ -396,9 +399,10 @@ import mydetails from './Details_task'
       box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
     }
     .taskdetails{
-      width: 82%;
-      min-height: 400px;
-      border: 1px solid red;
+      width: 90%;
+      height:95%;
+      overflow-y: auto;
+      /*border: 1px solid red;*/
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
       position: fixed;

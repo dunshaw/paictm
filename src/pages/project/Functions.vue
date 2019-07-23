@@ -20,7 +20,7 @@
             <template slot-scope="scope">
               <el-button size="mini" type="warning" plain @click="testcaseEdit(scope.row.id,scope.row.name)">用例</el-button>
               <el-button size="mini" type="warning" plain @click="testsuiteEdit(scope.row.id,scope.row.name)">用例集</el-button>
-              <el-button size="mini" type="primary" plain @click="testcaseAppium(scope.row.id,scope.row.name,scope.row.task_tool)">{{scope.row.task_tool | condition}}</el-button>
+              <el-button size="mini" type="primary" plain @click="testcaseAppium(scope.row.id,scope.row.name,scope.row.task_tool,scope.row.appPackage)">{{scope.row.task_tool | condition}}</el-button>
               <el-button size="mini" type="primary" plain @click="gotoCommand(scope.row.id,scope.row.name,scope.row.task_tool)">命令</el-button>
               <el-button size="mini" type="success" plain @click="projectEdit(scope.$index, scope.row.id)">工程</el-button>
               <el-button size="mini" type="success" plain @click="projectCopy(scope.$index, scope.row.id)">复制</el-button>
@@ -54,6 +54,17 @@
           <projectform @transferData='AddData' :showtypes='funtion'></projectform>
         </div>
       </transition>
+      <el-dialog
+        title="AppPackage"
+        :visible.sync="centerDialogVisible"
+        width="30%"
+        center>
+        <el-input v-model="appPackage" placeholder="请输入appPackage"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="centerDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="SaveappPackage">确 定</el-button>
+        </span>
+      </el-dialog>
        
 
 
@@ -80,6 +91,9 @@ export default {
           showtable:'',
           tableData: [],
           uploadheaders:{ },
+          centerDialogVisible:false,
+          appPackage:'',
+          showAppId:'',
         }
       },
       computed:{
@@ -243,18 +257,41 @@ export default {
         },
         
         // 点击appium事件
-        testcaseAppium(id,name,type){
-          // console.log(id,name)
+        testcaseAppium(id,name,type,app){
+          // return console.log(id,name,type,app)
+          let _this = this;
           if(type=='behave'){
-            return this.$message.info(`BeHave没有此功能！`);
+            _this.appPackage = app;
+            _this.showAppId = id;
+            _this.centerDialogVisible = true;
+          }else{
+            //路由传参,跳转
+            this.$router.push({
+              name:'functionappium',
+              path:'/Project/FunctionAppium',
+              query:{
+                project_id:id,
+                project_name:name,
+              }
+            })
           }
-          //路由传参,跳转
-          this.$router.push({
-            name:'functionappium',
-            path:'/Project/FunctionAppium',
-            query:{
-              project_id:id,
-              project_name:name,
+          
+        },
+        SaveappPackage(){
+          console.log(this.showAppId,this.appPackage);
+          let data = {'project_id':this.showAppId,'appPackage':this.appPackage,"loginName":this.$store.state.isLoginName};
+          let _this=this;
+          _this.$axios({
+            method:'post',
+            url:'/api/deploy/save_atx_deploy',
+            data:_this.$qs.stringify(data),
+          }).then(function (res){
+            console.log(res);
+            if(res.data.status==200){
+              _this.centerDialogVisible = false
+              _this.getfunction()
+            }else{
+              return _this.$message.error(res.data.msg)
             }
           })
         },

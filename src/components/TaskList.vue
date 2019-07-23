@@ -125,7 +125,6 @@ export default {
         }).then(function (res){
           console.log(res);
           if(res.data.status==200){
-            _this.$emit('transferData',res.data.task_tool)
             _this.tempList=res.data.steps
             return _this.$message.success(res.data.msg)
           }else{

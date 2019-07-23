@@ -141,13 +141,15 @@ const store = new Vuex.Store({
         },
 
         isFinishData(state,status){
-            state.isFinishData.push(status)
+            state.isFinishData.unshift(status)
         },
 
         isRenewTask(state,status){
             state.isFinishData.splice(status,1)
         },
-
+        isEmptyTask(state){
+            state.isRunTasks = []
+        },
         logOut(state){
             state.isToken=''
             state.isLoginName = ''
@@ -169,7 +171,10 @@ const store = new Vuex.Store({
     getters: {
         getRunTasks(state) {
           return state.isRunTasks.length
-        }
+        },
+        getFinishfive(state) {
+            return state.isFinishData.slice(0,4)
+        },
     }
 
 })

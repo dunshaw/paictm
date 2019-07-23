@@ -77,7 +77,7 @@
           </div>
 
           <div class="frombg animated" v-if="BeforeRunFlag">
-            <Runsetup :projectid="project_id" :runid="suiteid" :codeLang="script_type" :runtype="runtype"></Runsetup> <!-- 运行准备 -->
+            <Runsetup :projectid="project_id" :runid="suiteid" :codeLang="script_type" :runtype="runtype" :tool="tasktool"></Runsetup> <!-- 运行准备 -->
           </div>
 
           <div class="frombg animated" v-if="isOrderFlag">
@@ -127,7 +127,8 @@ export default {
           dialogFormVisible: false,
           script_type:'',
           checkList: [],
-          caselist :[],
+          caselist:[],
+          tasktool:'',
         }
       },
       created(){

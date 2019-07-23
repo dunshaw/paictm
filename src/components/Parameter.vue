@@ -58,15 +58,21 @@
                 <el-option :label="page.name" :value="page.id" v-for="page in belongpages" :key="page.id"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="element_id" prop='element_id'><el-input v-model="ruleForm.element_id"></el-input></el-form-item>
-            <el-form-item label="index" prop='index'><el-input v-model="ruleForm.index"></el-input></el-form-item>
-            <el-form-item label="xpath" prop='xpath'><el-input v-model="ruleForm.xpath"></el-input></el-form-item>
-            <el-form-item label="uiautomator" prop='uiautomator'><el-input v-model="ruleForm.uiautomator"></el-input></el-form-item>
-            <el-form-item label="acc" prop='accessibility_id'><el-input v-model="ruleForm.accessibility_id"></el-input></el-form-item>
-            <el-form-item label="name" prop='attr_name'><el-input v-model="ruleForm.attr_name"></el-input></el-form-item>
-            <el-form-item label="clazz" prop='clazz'><el-input v-model="ruleForm.clazz"></el-input></el-form-item>
-            <el-form-item label="text" prop='text'><el-input v-model="ruleForm.text"></el-input></el-form-item>
-            <el-form-item label="css" prop='css'><el-input v-model="ruleForm.css"></el-input></el-form-item>
+            <div v-if='task_tool=="behave"'>
+              <el-form-item label="text" prop='text'><el-input v-model="ruleForm.text"></el-input></el-form-item>
+              <el-form-item label="resourceId" prop='resourceId'><el-input v-model="ruleForm.resourceId"></el-input></el-form-item>
+            </div>
+            <div v-else='task_tool=="behave"'>
+              <el-form-item label="element_id" prop='element_id'><el-input v-model="ruleForm.element_id"></el-input></el-form-item>
+              <el-form-item label="index" prop='index'><el-input v-model="ruleForm.index"></el-input></el-form-item>
+              <el-form-item label="xpath" prop='xpath'><el-input v-model="ruleForm.xpath"></el-input></el-form-item>
+              <el-form-item label="uiautomator" prop='uiautomator'><el-input v-model="ruleForm.uiautomator"></el-input></el-form-item>
+              <el-form-item label="acc" prop='accessibility_id'><el-input v-model="ruleForm.accessibility_id"></el-input></el-form-item>
+              <el-form-item label="name" prop='attr_name'><el-input v-model="ruleForm.attr_name"></el-input></el-form-item>
+              <el-form-item label="clazz" prop='clazz'><el-input v-model="ruleForm.clazz"></el-input></el-form-item>
+              <el-form-item label="text" prop='text'><el-input v-model="ruleForm.text"></el-input></el-form-item>
+              <el-form-item label="css" prop='css'><el-input v-model="ruleForm.css"></el-input></el-form-item>
+            </div>
           </div>
           <el-form-item label="适用设备">
             <el-select v-model="ruleForm.device_id" placeholder="请选择手机设备,默认为通用" multiple collapse-tags :disabled="editflag">
@@ -98,6 +104,7 @@ import {mapState} from 'vuex'
         parameterlist:[],
         belongpages:[],
         devices:[],
+        task_tool:'',
         editflag:false,
         formflag:false,
         ruleForm: {
@@ -115,6 +122,7 @@ import {mapState} from 'vuex'
           uiautomator:'',
           accessibility_id:"",
           attr_name:'',
+          resourceId:'',  
         },
         rules:{
             name:[
@@ -157,6 +165,7 @@ import {mapState} from 'vuex'
           }).then(function (res){
             console.log(res);
             if(res.data.status==200){
+              _this.task_tool = res.data.task_tool
               _this.belongpages=res.data.app_pages
               _this.parameterlist = res.data.app_pages.concat(res.data.app_elements.concat(res.data.app_input_parameters))
             }
@@ -199,7 +208,8 @@ import {mapState} from 'vuex'
             _this.ruleForm['css']=elementvalue['css'],
             _this.ruleForm['uiautomator']=elementvalue['uiautomator'],
             _this.ruleForm['accessibility_id']=elementvalue['accessibility_id'],
-            _this.ruleForm['attr_name']=elementvalue['attr_name']
+            _this.ruleForm['attr_name']=elementvalue['attr_name'],
+            _this.ruleForm['resourceId']=elementvalue['resourceId']
           }else{
             _this.ruleForm['value']=data['value']
           }
@@ -245,7 +255,8 @@ import {mapState} from 'vuex'
               css:'',
               uiautomator:'',
               accessibility_id:"",
-              attr_name:''}
+              attr_name:'',
+              resourceId:''}
         },
         //新增事件获取设备
         handlecreate(){
@@ -296,6 +307,7 @@ import {mapState} from 'vuex'
           this.$refs[formName].validate((valid) => {
             if (valid) {
               _this.ruleForm['project_id']=_this.projectid
+              _this.ruleForm['task_tool']=_this.task_tool
               _this.ruleForm['device_id']=JSON.stringify(_this.ruleForm['device_id'])
               let data = _this.ruleForm
               _this.$axios({
@@ -358,7 +370,7 @@ import {mapState} from 'vuex'
 <style scoped>
   .box{
     width: 60%;
-    max-height: 90%;
+    max-height: 85%;
     background-color: #fff;
     margin:0 auto;
     margin-top: 2%;

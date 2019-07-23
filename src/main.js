@@ -43,9 +43,11 @@ return config;
 
 return Promise.reject(error);
 });
- 
+
+let errs = 0;
 // http response 拦截器
 axios.interceptors.response.use(response => {
+  errs = 0;
     // 跳过后台进度的loading显示
     if(response.config.url != '/api/task/get_total_task_progress' && response.config.url != '/api/task/get_device_task_progress' && response.config.url !='/api/task/get_the_task_progress'){
       let loading = Loading.service({});
@@ -68,6 +70,9 @@ error => {
     console.log(error.response.status)
     if (error.response) {
         loading.close();
+        errs+=1
+        if(errs>3){store.commit('isEmptyTask')};
+        
         switch (error.response.status) {
             case 404:
                 Message.error({'message':'系统异常'})

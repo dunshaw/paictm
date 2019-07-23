@@ -170,7 +170,7 @@ export default {
     Edit_test_commands(){
       // console.log(this.usercontent)
       let usercontent = this.usercontent
-      let _this=this
+      let _this=this;
       if(usercontent.length==0){
         return 
       }
@@ -178,7 +178,7 @@ export default {
         _this.$axios({
             method:'post',
             url:'/api/command/get_code',
-            data:_this.$qs.stringify({'content':usercontent,'script_type':_this.codeLang ,'task_tool':_this.tooltype})
+            data:_this.$qs.stringify({'content':usercontent,'script_type':_this.codeLang,'task_tool':_this.tooltype})
         }).then(function (res){
             console.log(res);
             if(res.data.status==200){
